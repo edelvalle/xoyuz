@@ -11,7 +11,7 @@ def read(fname):
 version = '0.1.0'
 
 setup(
-    name='spine',
+    name='xoyuz',
     version=version,
     author='Eddy Ernesto del Valle Pino',
     author_email='xigmatron@gmail.com',
