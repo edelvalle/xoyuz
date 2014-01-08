@@ -4,10 +4,10 @@ xoyuz - союз
 
 "Союз" is a Russian word that means means "union" or "united", the correct
 transliteration is "søyuz", but you already must know our policy about
-X-project-naming convention. ;)
+"X project naming convention". ;)
 
-This is a Django application that helps us to improve serving static files in
-production unifying and minifying them.
+This is a Django application that improve serving static files in production
+concatenating and minifying them.  django-pipeline?  fanstatic.
 
 
 Installation
@@ -40,7 +40,7 @@ Now you can write:
     {% resources 'js/file.js' 'js/other_file.js' 'js/another_file.js' %}
 
 This will write the same than above in development, but when you do DEBUG=True
-This outputs something like:
+This prints something like:
 
     <script src="/media/resources/567debe09c122151a284a3183da3689b.min.js">
 
@@ -53,7 +53,7 @@ WARNING! - ВНИМАНИЕ!
 - The first request of a new resource bundle will take some time because the
   files are being concatenated and minified.
 
-- Do not mix in a `resources` sentence CSS and JavaScript.
+- Do not mix in a `resources` sentence CSS and JavaScript files.
 
 - Every time you deploy again run `python manage.py cleanminification` to
   delete old generated files.
