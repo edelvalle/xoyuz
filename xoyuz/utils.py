@@ -25,7 +25,6 @@ from __future__ import (
 import re
 import posixpath
 from shutil import move
-from subprocess import call
 from os.path import join, splitext, dirname
 from hashlib import sha1
 try:
@@ -46,58 +45,53 @@ url_extractor = re.compile(r'url\(["\']?(?P<url>[^"\'\)]*)[\'"]?\)')
 class Bundle(object):
     def __init__(self, paths):
         self.paths = paths
+        name, ext = splitext(paths[0])
+        if ext in ('.js', '.coffee'):
+            self.language = 'javascript'
+            self.ext = '.js'
+        elif ext in ('.css', '.less'):
+            self.language = 'stylesheet'
+            self.ext = '.css'
+        else:
+            raise ValueError('Unknown file type: ' + paths)
 
     @memoized_property
-    def concat_file_name(self):
+    def file_name(self):
         joined_paths = ''.join(self.paths)
-        _, ext = splitext(joined_paths)
-        return sha1(joined_paths).hexdigest() + ext
+        return sha1(joined_paths).hexdigest() + self.ext
 
     @memoized_property
-    def minified_file_name(self):
-        return '%s.min%s' % splitext(self.concat_file_name)
-
-    @memoized_property
-    def concat_file_path(self):
-        return join('resources', self.concat_file_name)
-
-    @memoized_property
-    def minified_file_path(self):
-        return join('resources', self.minified_file_name)
+    def file_path(self):
+        return join('resources', self.file_name)
 
     @property
-    def minified_url(self):
-        if not default_storage.exists(self.minified_file_path):
-            self.concat_assets()
-            self.minify()
-        return default_storage.url(self.minified_file_path)
+    def url(self):
+        if not default_storage.exists(self.file_path):
+            self.compile_assets()
+        return default_storage.url(self.file_path)
 
-    def concat_assets(self):
-        concat_file_content = FileContent(self.concat_file_path)
+    def compile_assets(self):
+        file_content = FileContent(self.file_path)
         for path in self.paths:
             normalized_path = posixpath.normpath(unquote(path)).lstrip('/')
             fs_path = finders.find(normalized_path)
-            concat_file_content.append(open(fs_path).read(), path)
+            file_content.append(open(fs_path).read(), path)
 
         real_path = default_storage.save(
-            self.concat_file_path,
-            concat_file_content
+            self.file_path,
+            file_content
         )
-        if real_path != self.concat_file_path:
+        if real_path != self.file_path:
             move(
                 default_storage.path(real_path),
-                default_storage.path(self.concat_file_path)
+                default_storage.path(self.file_path)
             )
-
-    def minify(self):
-        minified_file = default_storage.path(self.minified_file_path)
-        concat_file = default_storage.path(self.concat_file_path)
-        call(['yui-compressor', '-o', minified_file, concat_file])
 
 
 class FileContent(object):
     def __init__(self, path):
         self._is_css = path.endswith('.css')
+        self._is_minified = False
         self.content = []
 
     def append(self, chunk, path):
@@ -105,8 +99,19 @@ class FileContent(object):
             chunk = self.adjust_urls(chunk, path)
         self.content.append(chunk)
 
+    def minify(self):
+        if not self._is_minified:
+            if self._is_css:
+                from cssmin import cssmin as minify
+            else:
+                from jsmin import jsmin as minify
+            all_content = ''.join(self.content)
+            self.content = minify(all_content)
+            self._is_minified = True
+
     def chunks(self):
-        return self.content
+        self.minify()
+        yield self.content
 
     def adjust_urls(self, file_content, path):
         file_content = file_content.decode('utf8')
