@@ -31,7 +31,7 @@ register = template.Library()
 
 @register.simple_tag
 def resources(*urls):
-    if settings.DEBUG:
+    if not settings.DEBUG:
         urls = [Bundle(urls).url]
     else:
         urls = [settings.STATIC_URL + url for url in urls]
