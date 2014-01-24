@@ -26,6 +26,7 @@ import re
 import posixpath
 from shutil import move
 from os.path import join, splitext, dirname
+from subprocess import check_output
 from hashlib import sha1
 try:
     from urllib.parse import unquote
@@ -75,7 +76,11 @@ class Bundle(object):
         for path in self.paths:
             normalized_path = posixpath.normpath(unquote(path)).lstrip('/')
             fs_path = finders.find(normalized_path)
-            file_content.append(open(fs_path).read(), path)
+            if fs_path.endswith('.coffee'):
+                content = check_output(['coffee', '-cp', fs_path])
+            else:
+                content = open(fs_path).read()
+            file_content.append(content, path)
 
         real_path = default_storage.save(
             self.file_path,
