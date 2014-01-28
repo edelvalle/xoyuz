@@ -35,4 +35,4 @@ def resources(*urls):
         urls = [Bundle(urls).url]
     else:
         urls = [settings.STATIC_URL + url for url in urls]
-    return '\n'.join(get_tags(urls))
+    return get_tags(urls)

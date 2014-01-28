@@ -150,9 +150,11 @@ def get_tags(urls):
     Takes some static resource address and returns the appropriate HTML tag for
     it
     """
+    tags = []
     for url in urls:
         name, ext = splitext(url)
         if ext in JS_EXTENSIONS:
-            yield '<script src="%s.js"></script>' % name
+            tags.append('<script src="%s.js"></script>' % name)
         else:
-            yield '<link href="%s" rel="stylesheet">' % url
+            tags.append('<link href="%s" rel="stylesheet">' % url)
+    return '\n'.join(tags)
