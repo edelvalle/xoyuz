@@ -156,5 +156,5 @@ def get_tags(urls):
         if ext in JS_EXTENSIONS:
             tags.append('<script src="%s.js"></script>' % name)
         else:
-            tags.append('<link href="%s" rel="stylesheet">' % url)
+            tags.append('<link href="%s.css" rel="stylesheet">' % name)
     return '\n'.join(tags)
