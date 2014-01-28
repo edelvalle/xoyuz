@@ -42,15 +42,18 @@ from django.core.files.storage import default_storage
 url_pattern = re.compile(r'url\(["\']?[^"\'\)]*[\'"]?\)')
 url_extractor = re.compile(r'url\(["\']?(?P<url>[^"\'\)]*)[\'"]?\)')
 
+JS_EXTENSIONS = ('.js', '.coffee')
+CSS_EXTENSIONS = ('.css', '.less')
+
 
 class Bundle(object):
     def __init__(self, paths):
         self.paths = paths
         name, ext = splitext(paths[0])
-        if ext in ('.js', '.coffee'):
+        if ext in JS_EXTENSIONS:
             self.language = 'javascript'
             self.ext = '.js'
-        elif ext in ('.css', '.less'):
+        elif ext in CSS_EXTENSIONS:
             self.language = 'stylesheet'
             self.ext = '.css'
         else:
@@ -133,7 +136,8 @@ class FileContent(object):
 
 def get_tags(urls):
     for url in urls:
-        if url.endswith('js'):
-            yield '<script src="%s"></script>' % url
+        name, ext = splitext(url)
+        if ext in JS_EXTENSIONS:
+            yield '<script src="%s.js"></script>' % name
         else:
             yield '<link href="%s" rel="stylesheet">' % url
