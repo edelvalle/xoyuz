@@ -108,7 +108,7 @@ class FileContent(object):
         """
         if self._is_css:
             chunk = self.adjust_urls(chunk, path)
-        self.content.append(chunk)
+        self.content.append(chunk.decode('utf8'))
 
     def minify(self):
         if not self._is_minified:
