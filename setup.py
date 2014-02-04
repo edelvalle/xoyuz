@@ -35,7 +35,7 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        'Django',
-        'xoutil',
+        'Django>=1.5,<1.7',
+        'xoutil>=1.4.0,<1.6',
     ],
 )
