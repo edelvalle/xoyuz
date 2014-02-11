@@ -44,6 +44,7 @@ url_extractor = re.compile(r'url\(["\']?(?P<url>[^"\'\)]*)[\'"]?\)')
 
 JS_EXTENSIONS = ('.js', '.coffee')
 CSS_EXTENSIONS = ('.css', '.less')
+COFFEE_COMPILER = getattr(settings, 'COFFEE_COMPILER', 'coffee')
 
 
 class Bundle(object):
@@ -80,7 +81,7 @@ class Bundle(object):
             normalized_path = posixpath.normpath(unquote(path)).lstrip('/')
             fs_path = finders.find(normalized_path)
             if fs_path.endswith('.coffee'):
-                content = check_output(['coffee', '-cp', fs_path])
+                content = check_output([COFFEE_COMPILER, '-cp', fs_path])
             else:
                 content = open(fs_path).read()
             file_content.append(content, path)
@@ -117,7 +118,7 @@ class FileContent(object):
             else:
                 from jsmin import jsmin as minify
             all_content = ''.join(self.content)
-            self.content = minify(all_content)
+            self.content = minify(all_content).encode('utf8')
             self._is_minified = True
 
     def chunks(self):
