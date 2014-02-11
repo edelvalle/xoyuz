@@ -21,8 +21,6 @@ In your settings.py:
         ...
     )
 
-Ensure you have installed `yui-compressor`.
-
 
 Usage
 =====
