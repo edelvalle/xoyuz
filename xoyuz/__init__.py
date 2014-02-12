@@ -21,10 +21,16 @@ from __future__ import (
     unicode_literals as _py3_unicode
 )
 
-from django.conf import settings
+
 from django.core import management
+from django.contrib.staticfiles.management.commands import collectstatic
 
 
-# Auto clean minified files on production server start
-if not settings.DEBUG:
+old_handler = collectstatic.Command.handle
+
+
+def handle(self, *args, **kwargs):
+    old_handler(self, *args, **kwargs)
     management.call_command('cleanminification')
+
+collectstatic.Command.handle = handle
