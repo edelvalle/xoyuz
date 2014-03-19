@@ -80,6 +80,8 @@ class Bundle(object):
         for path in self.paths:
             normalized_path = posixpath.normpath(unquote(path)).lstrip('/')
             fs_path = finders.find(normalized_path)
+            if fs_path is None:
+                raise ValueError('File not found "%s"' % normalized_path)
             if fs_path.endswith('.coffee'):
                 content = check_output([COFFEE_COMPILER, '-cp', fs_path])
             else:
