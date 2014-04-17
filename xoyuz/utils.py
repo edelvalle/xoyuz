@@ -139,8 +139,11 @@ class FileContent(object):
         replacements = {}
         for url_ref in url_pattern.findall(file_content):
             url = url_extractor.match(url_ref).groups()[0]
-            replacements[url_ref] = 'url("../..%s%s/%s")' % (
-                settings.STATIC_URL, dirname(path), url
+            path_dirname = dirname(path)
+            if path_dirname:
+                path_dirname += '/'
+            replacements[url_ref] = 'url("../..%s%s%s")' % (
+                settings.STATIC_URL, path_dirname, url
             )
         for old, new in replacements.iteritems():
             file_content = file_content.replace(old, new)
