@@ -27,10 +27,13 @@ from django.core.management.base import BaseCommand
 
 from django.core.files.storage import default_storage
 
+from xoyuz.utils import COFFEE_COMPILER
+
 
 class Command(BaseCommand):
     help = 'Removes the minified files'
 
     def handle(self, *args, **kwargs):
-        rmtree(default_storage.path('resources'), ignore_errors=True)
+        if COFFEE_COMPILER:
+            rmtree(default_storage.path('resources'), ignore_errors=True)
         print('Minified files deleted...')
