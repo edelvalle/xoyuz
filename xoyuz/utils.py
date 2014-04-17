@@ -26,6 +26,7 @@ import re
 import posixpath
 from shutil import move
 from os.path import join, splitext, dirname
+from subprocess import check_output
 from hashlib import sha1
 try:
     from urllib.parse import unquote
@@ -43,6 +44,7 @@ url_extractor = re.compile(r'url\(["\']?(?P<url>[^"\'\)]*)[\'"]?\)')
 
 JS_EXTENSIONS = ('.js', '.coffee')
 CSS_EXTENSIONS = ('.css', '.less')
+COFFEE_COMPILER = getattr(settings, 'COFFEE_COMPILER', 'coffee')
 
 
 class Bundle(object):
@@ -81,8 +83,7 @@ class Bundle(object):
             if fs_path is None:
                 raise ValueError('File not found "%s"' % normalized_path)
             if fs_path.endswith('.coffee'):
-                import coffeescript
-                content = coffeescript.compile_file(fs_path)
+                content = check_output([COFFEE_COMPILER, '-cp', fs_path])
             else:
                 content = open(fs_path).read()
             file_content.append(content, path)
