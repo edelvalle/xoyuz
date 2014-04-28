@@ -26,7 +26,6 @@ import re
 import posixpath
 from shutil import move
 from os.path import join, splitext, dirname
-from subprocess import check_output
 from hashlib import sha1
 try:
     from urllib.parse import unquote
@@ -42,19 +41,18 @@ from django.core.files.storage import default_storage
 url_pattern = re.compile(r'url\(["\']?[^"\'\)]*[\'"]?\)')
 url_extractor = re.compile(r'url\(["\']?(?P<url>[^"\'\)]*)[\'"]?\)')
 
-JS_EXTENSIONS = ('.js', '.coffee')
-CSS_EXTENSIONS = ('.css', '.less')
-COFFEE_COMPILER = getattr(settings, 'COFFEE_COMPILER', 'coffee')
+JS_EXTENSION = '.js'
+CSS_EXTENSION = '.css'
 
 
 class Bundle(object):
     def __init__(self, paths):
         self.paths = paths
         name, ext = splitext(paths[0])
-        if ext in JS_EXTENSIONS:
+        if ext == JS_EXTENSION:
             self.language = 'javascript'
             self.ext = '.js'
-        elif ext in CSS_EXTENSIONS:
+        elif ext == CSS_EXTENSION:
             self.language = 'stylesheet'
             self.ext = '.css'
         else:
@@ -82,8 +80,6 @@ class Bundle(object):
             fs_path = finders.find(normalized_path)
             if fs_path is None:
                 raise ValueError('File not found "%s"' % normalized_path)
-            if fs_path.endswith('.coffee'):
-                content = check_output([COFFEE_COMPILER, '-cp', fs_path])
             else:
                 content = open(fs_path).read()
             file_content.append(content, path)
@@ -159,7 +155,7 @@ def get_tags(urls):
     tags = []
     for url in urls:
         name, ext = splitext(url)
-        if ext in JS_EXTENSIONS:
+        if ext == JS_EXTENSION:
             tags.append('<script src="%s.js"></script>' % name)
         else:
             tags.append('<link href="%s.css" rel="stylesheet">' % name)
