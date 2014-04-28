@@ -80,6 +80,8 @@ class Bundle(object):
         for path in self.paths:
             normalized_path = posixpath.normpath(unquote(path)).lstrip('/')
             fs_path = finders.find(normalized_path)
+            if fs_path is None:
+                raise ValueError('File not found "%s"' % normalized_path)
             if fs_path.endswith('.coffee'):
                 content = check_output([COFFEE_COMPILER, '-cp', fs_path])
             else:
@@ -138,8 +140,11 @@ class FileContent(object):
         replacements = {}
         for url_ref in url_pattern.findall(file_content):
             url = url_extractor.match(url_ref).groups()[0]
-            replacements[url_ref] = 'url("../..%s%s/%s")' % (
-                settings.STATIC_URL, dirname(path), url
+            path_dirname = dirname(path)
+            if path_dirname:
+                path_dirname += '/'
+            replacements[url_ref] = 'url("../..%s%s%s")' % (
+                settings.STATIC_URL, path_dirname, url
             )
         for old, new in replacements.iteritems():
             file_content = file_content.replace(old, new)
