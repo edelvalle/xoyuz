@@ -156,7 +156,8 @@ def get_tags(urls):
     for url in urls:
         name, ext = splitext(url)
         if ext == JS_EXTENSION:
-            tags.append('<script src="%s.js"></script>' % name)
+            tag = '<script src="%s.js"></script>'
         else:
-            tags.append('<link href="%s.css" rel="stylesheet">' % name)
+            tag = '<link href="%s.css" rel="stylesheet">'
+        tags.append(tag % name)
     return '\n'.join(tags)
