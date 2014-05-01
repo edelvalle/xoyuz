@@ -21,6 +21,7 @@ from __future__ import (
     unicode_literals as _py3_unicode
 )
 
+from xoutil.decorator import memoized_property
 
 from django.test import TestCase
 from django.core import management
@@ -30,47 +31,66 @@ from hashlib import sha1, md5
 from .utils import get_tags, Bundle
 
 
-class JavaScriptBundleTest(TestCase):
-    PATHS = ['xoyuz/test.js', 'xoyuz/test2.js']
-    PATHS_HASH = sha1(''.join(PATHS)).hexdigest()
+class BundleTest(TestCase):
+    PATHS = None
+    LANGUAGE = None
+    EXT = None
+    MINIFICATION_MD5 = None
 
     def setUp(self):
-        self.bundle = Bundle(self.PATHS)
+        if self.PATHS:
+            self.bundle = Bundle(self.PATHS)
 
     def tearDown(self):
-        management.call_command('cleanminification')
+        if self.PATHS:
+            management.call_command('cleanminification')
 
-    def test_object_state(self):
-        self.assertEqual(self.bundle.language, 'javascript')
-        self.assertEqual(self.bundle.ext, '.js')
+    @memoized_property
+    def paths_hash(self):
+        if self.PATHS:
+            return sha1(''.join(self.PATHS)).hexdigest()
+
+    def test_language_detection(self):
+        if self.PATHS:
+            self.assertEqual(self.bundle.language, self.LANGUAGE)
+            self.assertEqual(self.bundle.ext, self.EXT)
 
     def test_file_name(self):
-        self.assertEqual(self.bundle.file_name, self.PATHS_HASH + '.js')
+        if self.PATHS:
+            self.assertEqual(self.bundle.file_name, self.paths_hash + self.EXT)
 
     def test_file_path(self):
-        self.assertEqual(
-            self.bundle.file_path,
-            'resources/%s.js' % self.PATHS_HASH
-        )
+        if self.PATHS:
+            self.assertEqual(
+                self.bundle.file_path,
+                'resources/%s%s' % (self.paths_hash, self.EXT)
+            )
 
-    def test_compile_assets(self):
-        self.bundle.compile_assets()
-        self.assertTrue(default_storage.exists(self.bundle.file_path))
-        self.assertEqual(
-            default_storage.size(self.bundle.file_path),
-            110,
-        )
-        content = default_storage.open(self.bundle.file_path).read()
-        fhash = md5(content).hexdigest()
-        self.assertEqual(fhash, 'a5fd2cc1c17c96b55e8251d4d63d7d90')
-        self.assertEqual(
-            self.bundle.url,
-            '/media/resources/' + self.bundle.file_name
-        )
+    def test_assets_compilation(self):
+        if self.PATHS:
+            self.bundle.compile_assets()
+            self.assertTrue(default_storage.exists(self.bundle.file_path))
+            content = default_storage.open(self.bundle.file_path).read()
+            fhash = md5(content).hexdigest()
+            self.assertEqual(fhash, self.MINIFICATION_MD5)
+            self.assertEqual(
+                self.bundle.url,
+                '/media/resources/' + self.bundle.file_name
+            )
 
 
-class StylesheetBundleTest(TestCase):
-    pass
+class JavaScriptBundleTest(BundleTest):
+    PATHS = ['xoyuz/test.js', 'xoyuz/test2.js']
+    LANGUAGE = 'javascript'
+    EXT = '.js'
+    MINIFICATION_MD5 = 'a5fd2cc1c17c96b55e8251d4d63d7d90'
+
+
+class StylesheetBundleTest(BundleTest):
+    PATHS = ['xoyuz/test.css', 'xoyuz/test2.css']
+    LANGUAGE = 'stylesheet'
+    EXT = '.css'
+    MINIFICATION_MD5 = '0f5cbde7a69243cfa54412aefec8cafe'
 
 
 class FunctionsTest(TestCase):
