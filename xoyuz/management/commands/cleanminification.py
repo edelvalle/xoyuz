@@ -33,4 +33,3 @@ class Command(BaseCommand):
 
     def handle(self, *args, **kwargs):
         rmtree(default_storage.path('resources'), ignore_errors=True)
-        print('Minified files deleted...')
