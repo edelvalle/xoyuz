@@ -37,7 +37,7 @@ Now you can write:
 
     {% resources 'js/file.js' 'js/other_file.js' 'js/another_file.js' %}
 
-This will write the same than above in development, but when you do DEBUG=True
+This will write the same than above in development, but when you do DEBUG=False
 This prints something like:
 
     <script src="/media/resources/567debe09c122151a284a3183da3689b.min.js">
@@ -46,12 +46,13 @@ That file is a minified concatenation of the three files before.
 
 
 WARNING! - ВНИМАНИЕ!
-=====================
+====================
 
 - The first request of a new resource bundle will take some time because the
   files are being concatenated and minified.
 
 - Do not mix in a `resources` sentence CSS and JavaScript files.
 
-- Every time you deploy again run `python manage.py cleanminification` to
-  delete old generated files.
+- You can use `python manage.py cleanminification` command to clean the
+  existing minifications, but when you do `python manage.py collecstatic` the
+  minifications are cleaned.
