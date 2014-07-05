@@ -102,9 +102,7 @@ class FileContent(object):
         self.content = []
 
     def append(self, chunk, path):
-        """
-        Appends static resources to this file.
-        """
+        """Append static resources to this file."""
         if self._is_css:
             chunk = self.adjust_urls(chunk, path)
         self.content.append(chunk.decode('utf8'))
@@ -127,18 +125,12 @@ class FileContent(object):
             self._is_minified = True
 
     def chunks(self):
-        """
-        Minifies the content of the file before yielding it
-        """
+        """Minify the content of the file before yielding it."""
         self.minify()
         yield self.content
 
     def adjust_urls(self, file_content, path):
-        """
-        Takes a content of a CSS file and adjusts the URLs that references
-        images, fonts or other resources into absolute URLs to the same
-        resources
-        """
+        """Translate the URLs in a CSS file to absolute URLs."""
         file_content = file_content.decode('utf8')
         replacements = {}
         for url_ref in url_pattern.findall(file_content):
@@ -155,10 +147,7 @@ class FileContent(object):
 
 
 def get_tags(urls):
-    """
-    Takes some static resource address and returns the appropriate HTML tag for
-    it
-    """
+    """Take static resource address and return the appropriate HTML tag."""
     tags = []
     for url in urls:
         name, ext = splitext(url)
