@@ -112,7 +112,14 @@ class FileContent(object):
     def minify(self):
         if not self._is_minified:
             if self._is_css:
-                from cssmin import cssmin as minify
+                from cssmin import cssmin
+
+                def minify(css):
+                    """Revert `box-shadow`, webkit does not understands it."""
+                    css = cssmin(css)
+                    css = css.replace('box-shadow:0;', 'box-shadow:0 0;')
+                    return css
+
             else:
                 from jsmin import jsmin as minify
             all_content = ''.join(self.content)
