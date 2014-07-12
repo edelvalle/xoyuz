@@ -8,7 +8,7 @@ from setuptools import setup, find_packages
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
-version = '0.2.4'
+version = '0.2.5'
 
 setup(
     name='xoyuz',
@@ -36,7 +36,7 @@ setup(
     zip_safe=False,
     install_requires=[
         'Django>=1.5,<1.7',
-        'xoutil>=1.4.0,<1.6',
+        'xoutil>=1.6.0,<1.7',
         'jsmin>=2.0.8,<3',
         'cssmin>=0.2.0,<1',
     ],
