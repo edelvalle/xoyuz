@@ -23,7 +23,7 @@ from xoutil.decorator import memoized_property
 
 from django.test import TestCase
 from django.core import management
-from django.contrib.staticfiles.storage import staticfiles_storage
+from xoyuz import default_storage
 from hashlib import sha1, md5
 
 from .utils import get_tags, Bundle
@@ -67,8 +67,8 @@ class BundleTest(TestCase):
     def test_assets_compilation(self):
         if self.PATHS:
             self.bundle.compile_assets()
-            self.assertTrue(staticfiles_storage.exists(self.bundle.file_path))
-            content = staticfiles_storage.open(self.bundle.file_path).read()
+            self.assertTrue(default_storage.exists(self.bundle.file_path))
+            content = default_storage.open(self.bundle.file_path).read()
             fhash = md5(content).hexdigest()
             self.assertEqual(fhash, self.MINIFICATION_MD5)
             self.assertEqual(
