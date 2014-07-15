@@ -14,12 +14,10 @@
 # package.
 
 
-from __future__ import (
-    absolute_import as _py3_abs_imports,
-    division as _py3_division,
-    print_function as _py3_print,
-    unicode_literals as _py3_unicode
-)
+from __future__ import (absolute_import as _py3_abs_imports,
+                        division as _py3_division,
+                        print_function as _py3_print,
+                        unicode_literals as _py3_unicode)
 
 from xoutil.decorator import memoized_property
 
