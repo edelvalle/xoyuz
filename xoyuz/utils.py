@@ -34,7 +34,7 @@ except ImportError:     # Python 2
 from xoutil.decorator import memoized_property
 from django.conf import settings
 from django.contrib.staticfiles import finders
-from django.core.files.storage import default_storage
+from django.contrib.staticfiles.storage import staticfiles_storage
 
 
 url_pattern = re.compile(r'url\(["\']?[^"\'\)]*[\'"]?\)')
@@ -68,9 +68,9 @@ class Bundle(object):
 
     @property
     def url(self):
-        if not default_storage.exists(self.file_path):
+        if not staticfiles_storage.exists(self.file_path):
             self.compile_assets()
-        return default_storage.url(self.file_path)
+        return staticfiles_storage.url(self.file_path)
 
     def compile_assets(self):
         file_content = FileContent(self.file_path)
@@ -83,14 +83,14 @@ class Bundle(object):
                 content = open(fs_path).read()
             file_content.append(content, path)
 
-        real_path = default_storage.save(
+        real_path = staticfiles_storage.save(
             self.file_path,
             file_content
         )
         if real_path != self.file_path:
             move(
-                default_storage.path(real_path),
-                default_storage.path(self.file_path)
+                staticfiles_storage.path(real_path),
+                staticfiles_storage.path(self.file_path)
             )
 
 

@@ -24,11 +24,11 @@ from __future__ import (
 from shutil import rmtree
 from django.core.management.base import BaseCommand
 
-from django.core.files.storage import default_storage
+from django.contrib.staticfiles.storage import staticfiles_storage
 
 
 class Command(BaseCommand):
     help = 'Removes the minified files'
 
     def handle(self, *args, **kwargs):
-        rmtree(default_storage.path('resources'), ignore_errors=True)
+        rmtree(staticfiles_storage.path('resources'), ignore_errors=True)
