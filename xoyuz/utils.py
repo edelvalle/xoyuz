@@ -23,6 +23,7 @@ from __future__ import (
 
 import re
 import posixpath
+from urlparse import urljoin
 from shutil import move
 from os.path import join, splitext, dirname
 from hashlib import sha1
@@ -137,9 +138,8 @@ class FileContent(object):
             path_dirname = dirname(path)
             if path_dirname:
                 path_dirname += '/'
-            replacements[url_ref] = 'url("../..%s%s%s")' % (
-                settings.STATIC_URL, path_dirname, url
-            )
+            url = urljoin(settings.STATIC_URL, path_dirname + url)
+            replacements[url_ref] = 'url("%s")' % url
         for old, new in replacements.iteritems():
             file_content = file_content.replace(old, new)
         return file_content.encode('utf8')
