@@ -3,7 +3,7 @@
 #----------------------------------------------------------------------
 # xoyuz
 #----------------------------------------------------------------------
-# Copyright (c) 2014 Merchise Autrement and Contributors
+# Copyright (c) 2013-2014 Merchise Autrement and Contributors
 # All rights reserved.
 #
 # Author: Eddy Ernesto del Valle Pino <eddy@merchise.org>
@@ -14,15 +14,16 @@
 # package.
 
 
-from __future__ import (
-    absolute_import as _py3_abs_imports,
-    division as _py3_division,
-    print_function as _py3_print,
-    unicode_literals as _py3_unicode
-)
+from __future__ import (absolute_import as _py3_abs_imports,
+                        division as _py3_division,
+                        print_function as _py3_print,
+                        unicode_literals as _py3_unicode)
 
+from xoutil.objects import get_first_of
 
+from django.conf import settings
 from django.core import management
+from django.core.files.storage import get_storage_class
 from django.contrib.staticfiles.management.commands import collectstatic
 
 
@@ -34,3 +35,9 @@ def handle(self, *args, **kwargs):
     management.call_command('cleanminification')
 
 collectstatic.Command.handle = handle
+
+default_storage = get_storage_class(get_first_of(
+    settings,
+    'XOYUZ_STORAGE',
+    'STATICFILES_STORAGE',
+))()

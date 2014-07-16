@@ -14,18 +14,16 @@
 # package.
 
 
-from __future__ import (
-    absolute_import as _py3_abs_imports,
-    division as _py3_division,
-    print_function as _py3_print,
-    unicode_literals as _py3_unicode
-)
+from __future__ import (absolute_import as _py3_abs_imports,
+                        division as _py3_division,
+                        print_function as _py3_print,
+                        unicode_literals as _py3_unicode)
 
 from xoutil.decorator import memoized_property
 
 from django.test import TestCase
 from django.core import management
-from django.core.files.storage import default_storage
+from xoyuz import default_storage
 from hashlib import sha1, md5
 
 from .utils import get_tags, Bundle
