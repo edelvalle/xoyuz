@@ -73,7 +73,9 @@ class Bundle(object):
     def all_files(self):
         all_files = []
         for require in self.require:
-            all_files.extend(require.all_files)
+            for file_name in require.all_files:
+                if file_name not in all_files:
+                    all_files.append(file_name)
         all_files.extend(self.files)
         return tuple(all_files)
 
