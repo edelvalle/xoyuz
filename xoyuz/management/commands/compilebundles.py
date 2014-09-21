@@ -21,14 +21,13 @@ from __future__ import (
     unicode_literals as _py3_unicode
 )
 
-from shutil import rmtree
+from django.apps import apps
 from django.core.management.base import BaseCommand
-
-from xoyuz import default_storage
 
 
 class Command(BaseCommand):
-    help = 'Removes the minified files'
+    help = 'Build the xoyuz bundles'
 
     def handle(self, *args, **kwargs):
-        rmtree(default_storage.path('resources'), ignore_errors=True)
+        xoyuz = apps.get_app_config('xoyuz')
+        xoyuz.compile_bundles()
