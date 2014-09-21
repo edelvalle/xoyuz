@@ -28,7 +28,8 @@ from django.utils.encoding import force_text
 
 def strip_tags(value):
     value = strip_spaces_between_tags(value)
-    value = re.sub(r'\s+', ' ', force_text(value))
+    # compact all white spaces, except r'\n'
+    value = re.sub(r'[ \t\r\f\v]+', ' ', force_text(value))
     return value
 
 
