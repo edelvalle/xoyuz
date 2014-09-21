@@ -20,6 +20,7 @@ from __future__ import (absolute_import as _py3_abs_imports,
                         unicode_literals as _py3_unicode)
 
 import re
+from django.conf import settings
 from django.template.response import SimpleTemplateResponse
 from django.utils.html import strip_spaces_between_tags
 from django.utils.encoding import force_text
@@ -35,8 +36,8 @@ class SpacelessMidleware(object):
     """Remove the space between tags in `text/html` responses."""
 
     def process_response(self, request, response):
-        if isinstance(response, SimpleTemplateResponse):
-            response.content = strip_tags(
-                response.render().content
-            )
+        if not settings.DEBUG and isinstance(response, SimpleTemplateResponse):
+                response.content = strip_tags(
+                    response.render().content
+                )
         return response
