@@ -30,6 +30,16 @@ def strip_tags(value):
     value = strip_spaces_between_tags(value)
     # compact all white spaces, except r'\n'
     value = re.sub(r'[ \t\r\f\v]+', ' ', force_text(value))
+    old_value = None
+    while value != old_value:
+        old_value = value
+        value = re.sub(
+            r'<(?P<pre>[^>]+)\s'     # <...\s
+            r'(?P<attr>[\w\-]+)=[\'"](?P<value>[\w\-\.:]+)[\'"]'  # a="b"
+            r'(?P<post>[^<]*)>',  # ...>
+            '<\g<pre> \g<attr>=\g<value>\g<post>>',  # <...\s a=b..,>
+            value
+        )
     return value
 
 
