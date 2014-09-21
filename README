@@ -7,7 +7,7 @@ transliteration is "søyuz", but you already must know our policy about
 "X project naming convention". ;)
 
 This is a Django application that improve serving static files in production
-concatenating and minifying them.  django-pipeline?  fanstatic.
+concatenating and minifying them.
 
 
 Installation
@@ -22,37 +22,157 @@ In your settings.py:
     )
 
 
-Usage
-=====
+    # Where the compiled files will be.
+    STATICFILES_DIRS = (
+        ('xoyuz', os.path.join(BASE_DIR, 'xoyuz')),
+    )
 
-In the templates where there was:
+The compression features are only activated when the site in ``DEBUG = False``
+mode. So in development the site will look normal.
 
-    <script src="{{ STATIC_URL }}js/file.js">
-    <script src="{{ STATIC_URL }}js/other_file.js">
-    <script src="{{ STATIC_URL }}js/another_file.js">
 
-Now you can write:
+Removing white spaces and unnecessary from HTML output
+======================================================
+
+Beffore the locale middleware you can add the SpacelessMiddleware:
+
+    MIDDLEWARE_CLASSES = (
+        'django.contrib.sessions.middleware.SessionMiddleware',
+        ...
+        'xoyuz.middleware.SpacelessMidleware',
+        ...
+        'xoonkito.middleware.locale.FixedLocaleMiddleware',
+    )
+
+This will remove all unnecessary white spaces and quotes from the template
+template responses. Reducing the size of the output.
+
+
+Concatenation and minification of static assets
+===============================================
+
+In the `AppConfig.ready` of your application you must define the assets bundles.
+An assets bundle a list of static files of the same type: stylesheet or
+javascript. Example:
+
+
+    class IncentiveConfig(AppConfig):
+    name = 'incentive'
+    verbose_name = _('Prestations')
+
+    def ready(self):
+        xoyuz = apps.get_app_config('xoyuz')  # get the xoyuz config
+        xoyuz.register_bundle(
+            'under_ie9.js',                   # bundle name
+            files=(                           # files in the bundle
+                'js/html5shiv.min.js',
+                'js/respond.min.js',
+            )
+        )
+        xoyuz.register_bundle(               # this is a CSS bundle
+            'base.css',
+            files=(
+                'bootstrap/css/bootstrap.css',
+                'bootstrap/css/bootstrap-responsive.css',
+                'style.css',
+            )
+        )
+
+
+You can express dependencies between bundles, for example:
+
+        xoyuz.register_bundle(                # jquery bundle
+            'jquery.js',
+            files=(
+                'jquery/jquery.js',
+            )
+        )
+
+        xoyuz.register_bundle(               # the bootstrap bundle
+            'bootstrap.js',
+            require=('jquery.js',)           # requires `jquery.js` bunddle
+            files=(
+                'bootstrap/js/bootstrap-transition.js',
+                'bootstrap/js/bootstrap-tab.js',
+                'bootstrap/js/bootstrap-carousel.js',
+            )
+        )
+
+        xoyuz.register_bundle(               # my specific app bundle
+            'incentive.js',
+            require=('bootstrap.js',),       # requires `bootstrap.js`
+            files=(
+                'js/incentive.js',
+            )
+        )
+
+Being this the `base.html` template to include these static files you must do:
 
     {% load xoyuz %}
+    <html>
+        <head>
+            ...
+            {% resources 'base.css' %}
+            ...
+        </head>
+        <body>
+            ...
+            <!--[if lt IE 9]>
+              {% resources 'under_ie9.js' %}
+            <![endif]-->
+            {% block scripts %}
+              {% resources 'bootstrap.js' %}
+            {% endblock scripts %}
+        </body>
+    </html>
 
-    {% resources 'js/file.js' 'js/other_file.js' 'js/another_file.js' %}
+Using the `resources` tag and the name of the bundle all files required and
+defined by this bundle are included, scripts should look like:
 
-This will write the same than above in development, but when you do DEBUG=False
-This prints something like:
+    <!--[if lt IE 9]>
+        <script src="/static/js/html5shiv.min.js"></script>
+        <script src="/static/js/respond.min.js"></script>
+    <![endif]-->
+    <script src="/static/jquery/jquery.js"></script>
+    <script src="/static/bootstrap/js/bootstrap-transition.js"></script>
+    <script src="/static/bootstrap/js/bootstrap-tab.js"></script>
+    <script src="/static/bootstrap/js/bootstrap-carousel.js"></script>
 
-    <script src="/media/resources/567debe09c122151a284a3183da3689b.min.js">
 
-That file is a minified concatenation of the three files before.
+For example, in the `incentive.html` template that inherits from `base.html`:
 
+    {% extends "base.html" %}
+    {% load xoyuz %}
+
+    {% block scripts %}
+        {% resources 'incentive.js' %}
+    {% endblock scripts %}
+
+This will include all needed resources for `incentive.js` and the files declared
+by the bundle it self.
+
+When you are going into production, you must compile the static assets.
+
+    python manage.py comilebundles
+
+This will concatenate and minify all declared bundles into single files, that
+must be included into the project distribution. This will be the static assets
+served by the project in production.
+
+You can configure the static files compilers, in the settings.py, defaults are:
+
+    XOYUZ_JS_COMPILER = 'xoyuz.compilers.closure'
+    XOYUZ_CSS_COMPILER = 'xoyuz.compilers.css_min'
+
+Look into the `xoyuz/compilers.py` to get an idea about how to write a compiler
+your self.
 
 WARNING! - ВНИМАНИЕ!
 ====================
 
-- The first request of a new resource bundle will take some time because the
-  files are being concatenated and minified.
-
 - Do not mix in a `resources` sentence CSS and JavaScript files.
 
-- You can use `python manage.py cleanminification` command to clean the
-  existing minifications, but when you do `python manage.py collecstatic` the
-  minifications are cleaned.
+- Ensure to have `closure-compiler` or `yui-compressor` installed if you are
+  going to use them. If you want to use full python compilers you can use
+  `css_min` and `js_min`. I configured by default the best compilers in my
+  humble opinion.
