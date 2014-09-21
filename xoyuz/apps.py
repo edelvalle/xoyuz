@@ -19,6 +19,8 @@ from __future__ import (absolute_import as _py3_abs_imports,
                         print_function as _py3_print,
                         unicode_literals as _py3_unicode)
 
+from xoutil import fs
+
 from django.apps import AppConfig
 from django.core.exceptions import ImproperlyConfigured
 from django.conf import settings
@@ -76,5 +78,6 @@ class XoyuzConfig(AppConfig):
         self.bundles[name] = Bundle(name, *args, **kwargs)
 
     def compile_bundles(self):
+        fs.makedirs(self.static_dir, exist_ok=True)
         for bundle in self.bundles.values():
             bundle.compile()
