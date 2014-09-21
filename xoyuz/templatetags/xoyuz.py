@@ -19,17 +19,34 @@ from __future__ import (absolute_import as _py3_abs_imports,
                         print_function as _py3_print,
                         unicode_literals as _py3_unicode)
 
+from os.path import splitext
+
 from django import template
+from django.apps import apps
 from django.conf import settings
-from xoyuz.utils import Bundle, get_tags
 
 register = template.Library()
 
 
 @register.simple_tag
-def resources(*urls):
+def resources(name):
+    xoyuz = apps.get_app_config('xoyuz')
+    bundle = xoyuz.bundles[name]
     if not settings.DEBUG:
-        urls = [Bundle(urls).url]
+        urls = [bundle.url]
     else:
-        urls = [settings.STATIC_URL + url for url in urls]
+        urls = bundle.all_urls
     return get_tags(urls)
+
+
+def get_tags(urls):
+    """Take static resource address and return the appropriate HTML tag."""
+    tags = []
+    for url in urls:
+        name, ext = splitext(url)
+        if ext == '.js':
+            tag = '<script src="%s.js"></script>'
+        else:
+            tag = '<link href="%s.css" rel="stylesheet">'
+        tags.append(tag % name)
+    return '\n'.join(tags)
