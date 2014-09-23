@@ -31,7 +31,7 @@ def source_file_required(compiler):
     def wrapper(source, ext):
         file_dsc, file_path = mkstemp(suffix=ext)
         with open(file_path, 'wb') as source_file:
-            source_file.write(source)
+            source_file.write(source.encode('utf-8'))
         result = compiler(file_path, ext)
         os.unlink(file_path)
         return result
