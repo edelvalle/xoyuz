@@ -156,7 +156,7 @@ class CompiledFile(object):
 
     def minify(self):
         if not self._is_minified:
-            all_content = ''.join(self.content)
+            all_content = str('\n').join(self.content)
             self.content = self.compiler(all_content, self.ext).encode('utf8')
         self._is_minified = True
 
