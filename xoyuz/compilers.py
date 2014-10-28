@@ -20,6 +20,7 @@ from __future__ import (absolute_import as _py3_abs_imports,
                         unicode_literals as _py3_unicode)
 
 import os
+import re
 from functools import wraps
 from subprocess import check_output
 from tempfile import mkstemp
@@ -60,6 +61,8 @@ def css_min(source, ext):
     css = cssmin(source)
     # Revert `box-shadow`, webkit does not understands it.
     css = css.replace('box-shadow:0;', 'box-shadow:0 0;')
+    # Remove comments
+    css = re.sub(r'/\*.*\*/', '', css).strip()
     return css
 
 
