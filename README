@@ -165,7 +165,7 @@ You can configure the static files compilers, in the settings.py, defaults are:
     XOYUZ_CSS_COMPILER = 'xoyuz.compilers.css_min'
 
 Look into the `xoyuz/compilers.py` to get an idea about how to write a compiler
-your self.
+by your self.
 
 WARNING! - ВНИМАНИЕ!
 ====================
