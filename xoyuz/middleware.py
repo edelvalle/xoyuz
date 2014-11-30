@@ -48,7 +48,5 @@ class SpacelessMidleware(object):
 
     def process_response(self, request, response):
         if not settings.DEBUG and isinstance(response, SimpleTemplateResponse):
-                response.content = strip_tags(
-                    response.render().content
-                )
+                response.content = strip_tags(response.render().content)
         return response
