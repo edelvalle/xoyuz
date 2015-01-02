@@ -56,16 +56,6 @@ def yui(source_file, ext):
     return check_output(['yui-compressor', source_file])
 
 
-def css_min(source, ext):
-    from cssmin import cssmin
-    css = cssmin(source)
-    # Revert `box-shadow`, webkit does not understands it.
-    css = css.replace('box-shadow:0;', 'box-shadow:0 0;')
-    # Remove comments
-    css = re.sub(r'/\*.*\*/', '', css).strip()
-    return css
-
-
 def js_min(source, ext):
     from jsmin import jsmin
     return jsmin(source)

@@ -67,7 +67,7 @@ class XoyuzConfig(AppConfig):
     @property
     def css_compiler(self):
         return import_item(
-            getattr(settings, 'XOYUZ_CSS_COMPILER', 'xoyuz.compilers.css_min')
+            getattr(settings, 'XOYUZ_CSS_COMPILER', 'xoyuz.compilers.yui')
         )
 
     def register_bundle(self, name, *args, **kwargs):
