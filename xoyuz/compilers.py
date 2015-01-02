@@ -20,6 +20,7 @@ from __future__ import (absolute_import as _py3_abs_imports,
                         unicode_literals as _py3_unicode)
 
 import os
+import re
 from functools import wraps
 from subprocess import check_output
 from tempfile import mkstemp
@@ -53,14 +54,6 @@ def closure(source_file, ext):
 @source_file_required
 def yui(source_file, ext):
     return check_output(['yui-compressor', source_file])
-
-
-def css_min(source, ext):
-    from cssmin import cssmin
-    css = cssmin(source)
-    # Revert `box-shadow`, webkit does not understands it.
-    css = css.replace('box-shadow:0;', 'box-shadow:0 0;')
-    return css
 
 
 def js_min(source, ext):

@@ -162,10 +162,10 @@ served by the project in production.
 You can configure the static files compilers, in the settings.py, defaults are:
 
     XOYUZ_JS_COMPILER = 'xoyuz.compilers.closure'
-    XOYUZ_CSS_COMPILER = 'xoyuz.compilers.css_min'
+    XOYUZ_CSS_COMPILER = 'xoyuz.compilers.yui'
 
 Look into the `xoyuz/compilers.py` to get an idea about how to write a compiler
-your self.
+by your self.
 
 WARNING! - ВНИМАНИЕ!
 ====================
@@ -174,5 +174,4 @@ WARNING! - ВНИМАНИЕ!
 
 - Ensure to have `closure-compiler` or `yui-compressor` installed if you are
   going to use them. If you want to use full python compilers you can use
-  `css_min` and `js_min`. I configured by default the best compilers in my
-  humble opinion.
+  `js_min`. I configured by default the best compilers in my humble opinion.
