@@ -57,54 +57,54 @@ javascript. Example:
 
 
     class IncentiveConfig(AppConfig):
-    name = 'incentive'
-    verbose_name = _('Prestations')
+        name = 'incentive'
+        verbose_name = _('Prestations')
 
-    def ready(self):
-        xoyuz = apps.get_app_config('xoyuz')  # get the xoyuz config
-        xoyuz.register_bundle(
-            'under_ie9.js',                   # bundle name
-            files=(                           # files in the bundle
-                'js/html5shiv.min.js',
-                'js/respond.min.js',
+        def ready(self):
+            xoyuz = apps.get_app_config('xoyuz')  # get the xoyuz config
+            xoyuz.register_bundle(
+                'under_ie9.js',                   # bundle name
+                files=(                           # files in the bundle
+                    'js/html5shiv.min.js',
+                    'js/respond.min.js',
+                )
             )
-        )
-        xoyuz.register_bundle(               # this is a CSS bundle
-            'base.css',
-            files=(
-                'bootstrap/css/bootstrap.css',
-                'bootstrap/css/bootstrap-responsive.css',
-                'style.css',
+            xoyuz.register_bundle(               # this is a CSS bundle
+                'base.css',
+                files=(
+                    'bootstrap/css/bootstrap.css',
+                    'bootstrap/css/bootstrap-responsive.css',
+                    'style.css',
+                )
             )
-        )
 
 
 You can express dependencies between bundles, for example:
 
-        xoyuz.register_bundle(                # jquery bundle
-            'jquery.js',
-            files=(
-                'jquery/jquery.js',
-            )
+    xoyuz.register_bundle(                # jquery bundle
+        'jquery.js',
+        files=(
+            'jquery/jquery.js',
         )
+    )
 
-        xoyuz.register_bundle(               # the bootstrap bundle
-            'bootstrap.js',
-            require=('jquery.js',)           # requires `jquery.js` bunddle
-            files=(
-                'bootstrap/js/bootstrap-transition.js',
-                'bootstrap/js/bootstrap-tab.js',
-                'bootstrap/js/bootstrap-carousel.js',
-            )
+    xoyuz.register_bundle(               # the bootstrap bundle
+        'bootstrap.js',
+        require=('jquery.js',)           # requires `jquery.js` bunddle
+        files=(
+            'bootstrap/js/bootstrap-transition.js',
+            'bootstrap/js/bootstrap-tab.js',
+            'bootstrap/js/bootstrap-carousel.js',
         )
+    )
 
-        xoyuz.register_bundle(               # my specific app bundle
-            'incentive.js',
-            require=('bootstrap.js',),       # requires `bootstrap.js`
-            files=(
-                'js/incentive.js',
-            )
+    xoyuz.register_bundle(               # my specific app bundle
+        'incentive.js',
+        require=('bootstrap.js',),       # requires `bootstrap.js`
+        files=(
+            'js/incentive.js',
         )
+    )
 
 Being this the `base.html` template to include these static files you must do:
 
